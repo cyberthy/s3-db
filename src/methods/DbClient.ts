@@ -1,34 +1,32 @@
-import { S3Client } from '@aws-sdk/client-s3';
-import { genEnvConfig } from '../lib/helpers';
-import s3Client from '../lib/s3Client';
-import {
-  IDbClient,
-  IS3DbConnectParams
-} from '../types/DbClient';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { IDbClient } from '../types/DbClient';
+import { globalConfig } from './connect';
 
-export let client: S3Client;
-export let dbInstance: IDbClient;
-
-class DbClient implements IDbClient {
+/**
+ * Not going to be exported for now.
+ */
+export class DbClient<T> implements IDbClient {
   client: S3Client;
 
   constructor(client: S3Client) {
     this.client = client;
   }
 
-  save() {}
-}
-
-
-export function connect({ s3Config }: IS3DbConnectParams) {
-  let config;
-  if (!s3Config) {
-    config = genEnvConfig();
-  } else {
-    config = s3Config;
+  private generatePath(initialPath: string) {
+    return '';
   }
 
-  client = s3Client(config);
-  dbInstance = new DbClient(client);
-  return client;
+  async save(collectionPath: string, data: T): Promise<boolean> {
+    const path = this.generatePath(collectionPath);
+
+    await this.client.send(
+      new PutObjectCommand({
+        Bucket: globalConfig.dbBucket,
+        Key: path,
+        Body: data as unknown as string,
+      })
+    );
+
+    return true;
+  }
 }

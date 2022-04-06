@@ -1,9 +1,12 @@
-import { dbInstance } from './DbClient';
 import { IDbClient } from '../types';
+import { dbInstance } from './connect';
 
 export class Collection<T> {
   private _fields: T;
   private _client: IDbClient;
+
+  // Todo: this will need validation
+  protected collectionPath: string;
 
   constructor(initObj?: T) {
     this.getInstance();
@@ -13,19 +16,28 @@ export class Collection<T> {
         (this as any)[key] = (initObj as any)[key];
       });
     }
+
+    this.validateCollection();
   }
 
-  getInstance() {
+  private validateCollection() {
+    // this method needs to validate the collection setup
+  }
+
+  private getInstance() {
     this._client = dbInstance;
     return this._client;
   }
 
-  getFields() {
-    console.log(this._fields);
+  protected getFields() {
     return this._fields;
   }
 
-  save() {
+  public toJSON() {
+    return this._fields;
+  }
+
+  public save() {
     this._client.save();
   }
 }

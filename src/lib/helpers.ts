@@ -10,25 +10,35 @@ export function env(name: string) {
 
 export function genEnvConfig(): DbClientParams & S3ClientConfig {
   const config: DbClientParams & S3ClientConfig = {
-    awsAccessKey: '',
-    awsSecretKey: '',
-    awsRegion: '',
+    awsAccessKey: env('AWS_ACCESS_KEY') as string,
+    awsSecretKey: env('AWS_SECRET_KEY') as string,
+    awsRegion: env('AWS_DEFAULT_REGION') as string,
+    dbBucket: env('AWS_DB_BUCKET') as string,
   };
 
-  if (!env('AWS_ACCESS_KEY')) {
-    throw new Error('please set access key');
-  }
-  config.awsAccessKey = env('AWS_ACCESS_KEY') as string;
-
-  if (!env('AWS_SECRET_KEY')) {
-    throw new Error('please set secret key');
-  }
-  config.awsSecretKey = env('AWS_SECRET_KEY') as string;
-
-  if (!env('AWS_DEFAULT_REGION')) {
-    throw new Error('please set a default region key');
-  }
-  config.awsRegion = env('AWS_DEFAULT_REGION') as string;
+  validateConfig(config);
 
   return config;
+}
+
+export function validateConfig(config: DbClientParams & S3ClientConfig) {
+  if (!isGreaterThanZero(config.awsAccessKey)) {
+    throw new Error('please set access key');
+  }
+
+  if (!isGreaterThanZero(config.awsSecretKey)) {
+    throw new Error('please set secret key');
+  }
+
+  if (!isGreaterThanZero(config.awsRegion)) {
+    throw new Error('please set region');
+  }
+
+  if (!isGreaterThanZero(config.dbBucket)) {
+    throw new Error('please set bucket');
+  }
+}
+
+function isGreaterThanZero(string: string) {
+  return string.trim().length > 0;
 }
