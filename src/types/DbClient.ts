@@ -1,4 +1,4 @@
-import { S3ClientConfig } from "@aws-sdk/client-s3";
+import { S3ClientConfig } from '@aws-sdk/client-s3';
 
 export type DbClientParams = {
   awsAccessKey: string;
@@ -8,7 +8,9 @@ export type DbClientParams = {
 };
 
 export type IDbClient = {
-  save: Function;
+  save: (collectionPath: string, data: any) => Promise<any>;
+  delete: (collectionPath: string, collectionId: string) => Promise<any>;
+  find: (collectionPath: string, collectionId: string) => Promise<any>;
 };
 
 export type IS3DbConnectParams = {

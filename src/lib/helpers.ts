@@ -10,10 +10,10 @@ export function env(name: string) {
 
 export function genEnvConfig(): DbClientParams & S3ClientConfig {
   const config: DbClientParams & S3ClientConfig = {
-    awsAccessKey: env('AWS_ACCESS_KEY') as string,
-    awsSecretKey: env('AWS_SECRET_KEY') as string,
-    awsRegion: env('AWS_DEFAULT_REGION') as string,
-    dbBucket: env('AWS_DB_BUCKET') as string,
+    awsAccessKey: env('S3_ACCESS_KEY') as string,
+    awsSecretKey: env('S3_SECRET_KEY') as string,
+    awsRegion: env('S3_DEFAULT_REGION') as string,
+    dbBucket: env('S3_DB_BUCKET') as string,
   };
 
   validateConfig(config);

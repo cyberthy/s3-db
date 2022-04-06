@@ -1,14 +1,17 @@
-import { IDbClient } from '../types';
+import { ICollection, IDbClient } from '../types';
 import { dbInstance } from './connect';
+import * as crypto from 'crypto';
 
-export class Collection<T> {
-  private _fields: T;
+export class Collection<T> implements ICollection {
+  private _fields: { id: string } & T;
   private _client: IDbClient;
+  protected _collectionName: string;
 
   // Todo: this will need validation
   protected collectionPath: string;
+  mockMode: boolean | undefined;
 
-  constructor(initObj?: T) {
+  constructor(initObj?: T, mockMode?: boolean) {
     this.getInstance();
 
     if (initObj) {
@@ -18,6 +21,15 @@ export class Collection<T> {
     }
 
     this.validateCollection();
+    this.setCollectionName();
+
+    this.mockMode = mockMode;
+  }
+
+  private setCollectionName() {
+    let name = Object.getPrototypeOf(this).constructor.name;
+    name = name.replace(/[\W_]+/g, ' ').toLowerCase();
+    this._collectionName = name;
   }
 
   private validateCollection() {
@@ -37,7 +49,28 @@ export class Collection<T> {
     return this._fields;
   }
 
-  public save() {
-    this._client.save();
+  generateNewId() {
+    this._fields.id = crypto.randomUUID();
+  }
+
+  async find() {
+    return await this._client.find(`${this.collectionPath}`, this._fields.id);
+  }
+
+  // action methods
+  async save() {
+    if (!this._fields.id) {
+      this.generateNewId();
+    }
+
+    if (!this.mockMode) {
+      await this._client.save(`${this.collectionPath}`, this.toJSON());
+    }
+  }
+
+  public delete() {
+    if (!this.mockMode) {
+      this._client.delete(`${this.collectionPath}`, this._fields.id);
+    }
   }
 }

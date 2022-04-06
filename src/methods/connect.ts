@@ -23,6 +23,6 @@ export function connect({ s3Config }: IS3DbConnectParams) {
     dbInstance = new DbClient(client);
     return client;
   } catch (error) {
-    throw new Error((error as any).message);
+    throw new Error(error as any).message;
   }
 }
