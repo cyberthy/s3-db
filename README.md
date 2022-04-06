@@ -1,4 +1,4 @@
-# S3 DB
+# S3 DB - (CONSTRUCTION IN)
 
 very early stages of an s3-db client for aws, stay tuned for more news, everything is subject to change.  
 At the moment we are treating the client as a collection mapper that saves documents in s3 based off the properties of the Collection class.
@@ -20,7 +20,7 @@ S3_ACCESS_KEY=$access-key
 S3_SECRET_KEY=$secret-key
 ```
 Then in your index.ts
-```javascript
+```typescript
 connect();
 ```
 
@@ -30,13 +30,13 @@ Or you can connect via the connect method like this
 <br />
 
 index.ts
-```javascript
+```typescript
   connect({ s3Config: { awsAccessKey: '${AWS_ACCESS_KEY}', awsSecretKey: '${AWS_SECRET_KEY}' } });
 ```
 
 ## Create a collection
 collections / product.ts
-```javascript
+```typescript
 import { Collection, field } from '@cyberthy/s3-db';
 
 export type IProduct = {
@@ -58,7 +58,7 @@ export class Product extends Collection<IProduct> {
 
 ## Use your collection
 product.ts
-```javascript
+```typescript
 const product = new Product({
   id: 'welcome',
   name: 'this is the name',

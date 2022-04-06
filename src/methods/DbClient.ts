@@ -1,6 +1,10 @@
 import { S3Client } from '@aws-sdk/client-s3';
+import { genEnvConfig } from '../lib/helpers';
 import s3Client from '../lib/s3Client';
-import { IDbClient, IS3DbConnectParams } from '../types/DbClient';
+import {
+  IDbClient,
+  IS3DbConnectParams
+} from '../types/DbClient';
 
 export let client: S3Client;
 export let dbInstance: IDbClient;
@@ -12,12 +16,19 @@ class DbClient implements IDbClient {
     this.client = client;
   }
 
-  save() {
-  }
+  save() {}
 }
 
+
 export function connect({ s3Config }: IS3DbConnectParams) {
-  client = s3Client(s3Config);
+  let config;
+  if (!s3Config) {
+    config = genEnvConfig();
+  } else {
+    config = s3Config;
+  }
+
+  client = s3Client(config);
   dbInstance = new DbClient(client);
   return client;
 }

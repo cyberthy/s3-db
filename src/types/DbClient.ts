@@ -4,7 +4,7 @@ import { ICollection } from "./Collection";
 export type DbClientParams = {
   awsAccessKey: string;
   awsSecretKey: string;
-  awsRegion?: string;
+  awsRegion: string;
 };
 
 export type IDbClient = {
@@ -12,5 +12,5 @@ export type IDbClient = {
 };
 
 export type IS3DbConnectParams = {
-  s3Config: DbClientParams & S3ClientConfig;
+  s3Config?: DbClientParams & S3ClientConfig;
 };
