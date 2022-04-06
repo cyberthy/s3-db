@@ -6,11 +6,33 @@ At the moment we are treating the client as a collection mapper that saves docum
 <br />
 
 # Getting started
+## Install
 ```bash
 npm install --save @cyberty/s3-db
 ```
 <br />
+
+## Setup connection details
+You have a choice here when it comes to setting your connection config, you can either use environment variables like this please replace $*** with your own values  
+```env
+S3_BUCKET_NAME=$bucket-name
+S3_ACCESS_KEY=$access-key
+S3_SECRET_KEY=$secret-key
+```
+Then in your index.ts
+```javascript
+connect();
+```
+
 <br />
+Or you can connect via the connect method like this 
+
+<br />
+
+index.ts
+```javascript
+  connect({ s3Config: { awsAccessKey: '${AWS_ACCESS_KEY}', awsSecretKey: '${AWS_SECRET_KEY}' } });
+```
 
 ## Create a collection
 collections / product.ts
