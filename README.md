@@ -1,4 +1,4 @@
-# S3 DB - (CONSTRUCTION IN)
+# S3 DB - (CONSTRUCTION IN PROGRESS)
 
 very early stages of an s3-db client for aws, stay tuned for more news, everything is subject to change.  
 At the moment we are treating the client as a collection mapper that saves documents in s3 based off the properties of the Collection class.
