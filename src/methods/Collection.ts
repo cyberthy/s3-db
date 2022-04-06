@@ -1,12 +1,18 @@
 import { dbInstance } from './DbClient';
 import { IDbClient } from '../types';
 
-export class Collection {
-  private _fields: string[];
+export class Collection<T> {
+  private _fields: T;
   private _client: IDbClient;
 
-  constructor() {
+  constructor(initObj?: T) {
     this.getInstance();
+
+    if (initObj) {
+      Object.keys(initObj).forEach((key: string) => {
+        (this as any)[key] = (initObj as any)[key];
+      });
+    }
   }
 
   getInstance() {
@@ -15,6 +21,7 @@ export class Collection {
   }
 
   getFields() {
+    console.log(this._fields);
     return this._fields;
   }
 
