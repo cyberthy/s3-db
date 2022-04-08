@@ -19,7 +19,7 @@ export class DbClient implements IDbClient {
   }
 
   private validatePath(initialPath: string, objectId: string) {
-    return `${initialPath}/${objectId}.json`;
+    return `${initialPath}/${objectId}`;
   }
 
   /**
@@ -49,26 +49,41 @@ export class DbClient implements IDbClient {
     }));
   }
 
-  async find(collectionPath: string, collectionId: string) {
-    const path = this.validatePath(collectionPath, collectionId);
-    await this.client.send(
-      new GetObjectCommand({
-        Bucket: globalConfig.dbBucket,
-        Key: path,
-      })
-    );
+  private streamToString(stream: any) {
+    return new Promise((resolve, reject) => {
+      const chunks: any = [];
+      stream.on('data', (chunk: any) => chunks.push(chunk));
+      stream.on('error', reject);
+      stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+    });
+  }
 
-    return true;
+  async find(collectionPath: string, collectionId: string) {
+    try {
+      const path = this.validatePath(collectionPath, collectionId);
+      const { Body } = await this.client.send(
+        new GetObjectCommand({
+          Bucket: globalConfig.dbBucket,
+          Key: path,
+          ResponseContentType: 'Buffer',
+        })
+      );
+
+      const value: string = (await this.streamToString(Body)) as string;
+      return JSON.parse(value);
+    } catch (error) {
+      console.log(error);
+      throw 'Item not found';
+    }
   }
 
   async save(collectionPath: string, data: any): Promise<boolean> {
     const path = this.validatePath(collectionPath, data.id);
-    console.log(globalConfig, path);
     await this.client.send(
       new PutObjectCommand({
         Bucket: globalConfig.dbBucket,
         Key: path,
-        Body: data as unknown as string,
+        Body: JSON.stringify(data) as unknown as string,
       })
     );
 
@@ -77,7 +92,6 @@ export class DbClient implements IDbClient {
 
   async delete(collectionPath: string, collectionId: string) {
     const path = this.validatePath(collectionPath, collectionId);
-    console.log(path);
     await this.client.send(
       new DeleteObjectCommand({
         Bucket: globalConfig.dbBucket,

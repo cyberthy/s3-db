@@ -14,12 +14,7 @@ export class Collection<T> implements ICollection {
   constructor(initObj?: T, mockMode?: boolean) {
     this.getInstance();
 
-    if (initObj) {
-      Object.keys(initObj).forEach((key: string) => {
-        (this as any)[key] = (initObj as any)[key];
-        (this._fields as any)[key] = (initObj as any)[key];
-      });
-    }
+    this.set(initObj as any);
 
     this.validateCollection();
     this.setCollectionName();
@@ -39,7 +34,7 @@ export class Collection<T> implements ICollection {
   }
 
   // private checkCollectionFolderExists() {
-    // const exists = await this._client.
+  // const exists = await this._client.
   // }
 
   private getInstance() {
@@ -55,6 +50,17 @@ export class Collection<T> implements ICollection {
     return this._fields;
   }
 
+  public set(data: T) {
+    if (data) {
+      Object.keys(data).forEach((key: any) => {
+        if (key === 'id' || (this._fields as any).hasOwnProperty(key)) {
+          (this as any)[key] = (data as any)[key];
+          (this._fields as any)[key] = (data as any)[key];
+        }
+      });
+    }
+  }
+
   generateNewId() {
     this._fields.id = crypto.randomUUID();
   }
@@ -66,10 +72,17 @@ export class Collection<T> implements ICollection {
   }
 
   async find() {
-    return await this._client.find(
+    const result = await this._client.find(
       `${this.collectionPath || ''}${this._collectionName || ''}`,
       this._fields.id
     );
+
+    if (!result) {
+      return {};
+    }
+
+    this.set(result);
+    return result;
   }
 
   // action methods
@@ -86,9 +99,9 @@ export class Collection<T> implements ICollection {
     }
   }
 
-  public delete() {
+  async delete() {
     if (!this.mockMode) {
-      this._client.delete(
+      await this._client.delete(
         `${this.collectionPath || ''}${this._collectionName || ''}`,
         this._fields.id
       );
