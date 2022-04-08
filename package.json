@@ -11,10 +11,10 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
     "prepare": "husky install && npm run build",
-    "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "changelog": "generate-changelog"
   },
   "publishConfig": {
     "@cyberthy:registry": "https://npm.pkg.github.com"
@@ -34,6 +34,7 @@
   "homepage": "https://github.com/cyberthy/s3-db#readme",
   "devDependencies": {
     "@types/jest": "^27.4.1",
+    "generate-changelog": "^1.8.0",
     "husky": "^7.0.4",
     "jest": "^27.5.1",
     "prettier": "^2.6.2",
