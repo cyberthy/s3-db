@@ -17,11 +17,13 @@ export class Collection<T> implements ICollection {
     if (initObj) {
       Object.keys(initObj).forEach((key: string) => {
         (this as any)[key] = (initObj as any)[key];
+        (this._fields as any)[key] = (initObj as any)[key];
       });
     }
 
     this.validateCollection();
     this.setCollectionName();
+    // this.checkCollectionFolderExists();
 
     this.mockMode = mockMode;
   }
@@ -35,6 +37,10 @@ export class Collection<T> implements ICollection {
   private validateCollection() {
     // this method needs to validate the collection setup
   }
+
+  // private checkCollectionFolderExists() {
+    // const exists = await this._client.
+  // }
 
   private getInstance() {
     this._client = dbInstance;
@@ -53,8 +59,17 @@ export class Collection<T> implements ICollection {
     this._fields.id = crypto.randomUUID();
   }
 
+  async list() {
+    return await this._client.list(
+      `${this.collectionPath || ''}${this._collectionName || ''}`
+    );
+  }
+
   async find() {
-    return await this._client.find(`${this.collectionPath}`, this._fields.id);
+    return await this._client.find(
+      `${this.collectionPath || ''}${this._collectionName || ''}`,
+      this._fields.id
+    );
   }
 
   // action methods
@@ -64,13 +79,19 @@ export class Collection<T> implements ICollection {
     }
 
     if (!this.mockMode) {
-      await this._client.save(`${this.collectionPath}`, this.toJSON());
+      await this._client.save(
+        `${this.collectionPath || ''}${this._collectionName || ''}`,
+        this.toJSON()
+      );
     }
   }
 
   public delete() {
     if (!this.mockMode) {
-      this._client.delete(`${this.collectionPath}`, this._fields.id);
+      this._client.delete(
+        `${this.collectionPath || ''}${this._collectionName || ''}`,
+        this._fields.id
+      );
     }
   }
 }

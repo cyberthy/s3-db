@@ -1,4 +1,3 @@
-import { S3ClientConfig } from '@aws-sdk/client-s3';
 import { DbClientParams } from '../types';
 
 export function env(name: string) {
@@ -8,11 +7,11 @@ export function env(name: string) {
   return process.env[name];
 }
 
-export function genEnvConfig(): DbClientParams & S3ClientConfig {
-  const config: DbClientParams & S3ClientConfig = {
+export function genEnvConfig(): DbClientParams {
+  const config: DbClientParams = {
     awsAccessKey: env('S3_ACCESS_KEY') as string,
     awsSecretKey: env('S3_SECRET_KEY') as string,
-    awsRegion: env('S3_DEFAULT_REGION') as string,
+    region: env('S3_DEFAULT_REGION') as string,
     dbBucket: env('S3_DB_BUCKET') as string,
   };
 
@@ -21,7 +20,7 @@ export function genEnvConfig(): DbClientParams & S3ClientConfig {
   return config;
 }
 
-export function validateConfig(config: DbClientParams & S3ClientConfig) {
+export function validateConfig(config: DbClientParams) {
   if (!isGreaterThanZero(config.awsAccessKey)) {
     throw new Error('please set access key');
   }
@@ -30,7 +29,7 @@ export function validateConfig(config: DbClientParams & S3ClientConfig) {
     throw new Error('please set secret key');
   }
 
-  if (!isGreaterThanZero(config.awsRegion)) {
+  if (!isGreaterThanZero(config.region)) {
     throw new Error('please set region');
   }
 

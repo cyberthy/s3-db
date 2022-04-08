@@ -6,7 +6,7 @@ import { DbClient } from './DbClient';
 
 export let client: S3Client;
 export let dbInstance: IDbClient;
-export let globalConfig: DbClientParams & S3ClientConfig;
+export let globalConfig: DbClientParams;
 
 export function connect({ s3Config }: IS3DbConnectParams) {
   try {
@@ -17,7 +17,6 @@ export function connect({ s3Config }: IS3DbConnectParams) {
       validateConfig(s3Config);
       config = s3Config;
     }
-
     globalConfig = config;
     client = s3Client(config);
     dbInstance = new DbClient(client);

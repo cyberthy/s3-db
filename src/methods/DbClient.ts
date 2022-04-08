@@ -1,6 +1,7 @@
 import {
   DeleteObjectCommand,
   GetObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
@@ -21,10 +22,35 @@ export class DbClient implements IDbClient {
     return `${initialPath}/${objectId}.json`;
   }
 
+  /**
+   * List method will grab all objects with a specific prefix
+   * filter the prefix item and set an id property on the objects returned
+   * @param collectionPath
+   * @returns
+   */
+  async list(collectionPath: string) {
+    const Prefix = `${collectionPath}/`;
+
+    const objects = await this.client.send(
+      new ListObjectsV2Command({
+        Bucket: globalConfig.dbBucket,
+        Delimiter: '/',
+        Prefix,
+      })
+    );
+
+    const objectsNotFolders = objects.Contents?.filter(
+      (object) => object.Key !== Prefix
+    );
+
+    return objectsNotFolders?.map((object) => ({
+      id: object.Key?.split('/')[1],
+      ...object,
+    }));
+  }
+
   async find(collectionPath: string, collectionId: string) {
     const path = this.validatePath(collectionPath, collectionId);
-
-    console.log(globalConfig, path);
     await this.client.send(
       new GetObjectCommand({
         Bucket: globalConfig.dbBucket,
