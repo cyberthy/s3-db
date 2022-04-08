@@ -1,4 +1,4 @@
-import { DbClient } from '../src/DbClient';
+import { DbClient } from '../src/methods/DbClient';
 describe('DbClient', () => {
   it('should fail with a no access key message', () => {
     try {
