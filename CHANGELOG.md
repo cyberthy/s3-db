@@ -1,3 +1,15 @@
+#### 1.1.0 (2022-04-09)
+
+##### Other Changes
+
+* **breaking:**  renamed file to File for more consistency on decorators, added file support regarding images, and technically any file types ([39900903](https://github.com/cyberthy/s3-db/commit/39900903a75569fd2bfecf3e14f50e2b9937e204))
+
+#### 1.0.6 (2022-04-09)
+
+##### Other Changes
+
+* **breaking:**  renamed file to File for more consistency on decorators, added file support regarding images, and technically any file types ([39900903](https://github.com/cyberthy/s3-db/commit/39900903a75569fd2bfecf3e14f50e2b9937e204))
+
 #### 1.0.6 (2022-04-08)
 
 ##### Other Changes
