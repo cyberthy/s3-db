@@ -1,3 +1,9 @@
+#### 1.2.1 (2022-04-09)
+
+##### Bug Fixes
+
+* **DbClient:**  fixing tests to pass on a minimal level ([55f517c7](https://github.com/cyberthy/s3-db/commit/55f517c7db761a9c0ae70bb1fdc3cbd39efde4cc))
+
 ### 1.2.0 (2022-04-09)
 
 ##### Other Changes
