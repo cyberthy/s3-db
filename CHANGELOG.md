@@ -1,3 +1,22 @@
+### 1.2.0 (2022-04-09)
+
+##### Other Changes
+
+* **chore:**  added release scripts ([e9423c12](https://github.com/cyberthy/s3-db/commit/e9423c12d1c771886cb70e6deeed5ea5467da484))
+* **breaking:**  renamed file to File for more consistency on decorators, added file support regarding images, and technically any file types ([39900903](https://github.com/cyberthy/s3-db/commit/39900903a75569fd2bfecf3e14f50e2b9937e204))
+
+#### 1.1.0 (2022-04-09)
+
+##### Other Changes
+
+* **breaking:**  renamed file to File for more consistency on decorators, added file support regarding images, and technically any file types ([39900903](https://github.com/cyberthy/s3-db/commit/39900903a75569fd2bfecf3e14f50e2b9937e204))
+
+#### 1.0.6 (2022-04-09)
+
+##### Other Changes
+
+* **breaking:**  renamed file to File for more consistency on decorators, added file support regarding images, and technically any file types ([39900903](https://github.com/cyberthy/s3-db/commit/39900903a75569fd2bfecf3e14f50e2b9937e204))
+
 #### 1.0.6 (2022-04-08)
 
 ##### Other Changes
