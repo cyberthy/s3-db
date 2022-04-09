@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs';
+
 export type IFile = {
   src: string;
   path: string;
@@ -5,8 +7,10 @@ export type IFile = {
 };
 
 export type IFileMetadata = {
-  filename: string;
-  extension: string;
+  name: string;
+  size: number;
+  data: Buffer;
+  mimetype: string;
 };
 
 export type IFileFieldOptions = {};
@@ -19,14 +23,21 @@ export function File(options?: IFileFieldOptions) {
       target._fields = {};
     }
 
+    if (!target._files) {
+      target._files = {};
+    }
+
     target._fields[key] = null;
+    target._files[key] = null;
 
     const getter = () => {
       return val;
     };
 
-    const setter = (value: any) => {
-      target._fields[key] = value;
+    const setter = (value: IFile) => {
+      const fileData = value.metadata.data;
+      target._fields[key] = value.metadata.name;
+      target._files[key] = fileData;
       val = value;
     };
 

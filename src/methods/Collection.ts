@@ -4,6 +4,7 @@ import * as crypto from 'crypto';
 
 export class Collection<T> implements ICollection {
   private _fields: { id: string } & T;
+  private _files: any;
   private _client: IDbClient;
   protected _collectionName: string;
 
@@ -14,10 +15,7 @@ export class Collection<T> implements ICollection {
   constructor(initObj?: T, mockMode?: boolean) {
     this.getInstance();
     this.set(initObj as any);
-    this.validateCollection();
     this.setCollectionName();
-    // this.checkCollectionFolderExists();
-
     this.mockMode = mockMode;
   }
 
@@ -26,14 +24,6 @@ export class Collection<T> implements ICollection {
     name = name.replace(/[\W_]+/g, ' ').toLowerCase();
     this._collectionName = name;
   }
-
-  private validateCollection() {
-    // this method needs to validate the collection setup
-  }
-
-  // private checkCollectionFolderExists() {
-  // const exists = await this._client.
-  // }
 
   private getInstance() {
     this._client = dbInstance;
@@ -63,6 +53,14 @@ export class Collection<T> implements ICollection {
     this._fields.id = crypto.randomUUID();
   }
 
+  async getFile(fileFieldName: string) {
+    if (!this._fields.hasOwnProperty(fileFieldName)) {
+      throw `this field doesn't exist`;
+    }
+    console.log((this._fields as any)[fileFieldName]);
+    return await this._client.getRawFile((this._fields as any)[fileFieldName].path);
+  }
+
   async list() {
     return await this._client.list(
       `${this.collectionPath || ''}${this._collectionName || ''}`
@@ -87,6 +85,18 @@ export class Collection<T> implements ICollection {
   async save() {
     if (!this._fields.id) {
       this.generateNewId();
+    }
+
+    if (this._files) {
+      for (const key of Object.keys(this._files)) {
+        const newPath = await this._client.saveRaw(
+          `${this.collectionPath || ''}${this._collectionName || ''}`,
+          (this._fields as any)[key]
+        );
+
+        (this._fields as any)[key].path = newPath;
+        (this._fields as any)[key].metadata.data = {};
+      }
     }
 
     if (!this.mockMode) {
