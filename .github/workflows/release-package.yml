@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: 12
       - run: npm ci
-      # - run: npm test
+      - run: npm test
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: ${{secrets.GITHUB_TOKEN}}
