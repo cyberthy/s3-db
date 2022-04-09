@@ -13,9 +13,7 @@ export class Collection<T> implements ICollection {
 
   constructor(initObj?: T, mockMode?: boolean) {
     this.getInstance();
-
     this.set(initObj as any);
-
     this.validateCollection();
     this.setCollectionName();
     // this.checkCollectionFolderExists();

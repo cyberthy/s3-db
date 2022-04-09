@@ -3,7 +3,7 @@ import {
   GetObjectCommand,
   ListObjectsV2Command,
   PutObjectCommand,
-  S3Client,
+  S3Client
 } from '@aws-sdk/client-s3';
 import { IDbClient } from '../types';
 import { globalConfig } from './connect';

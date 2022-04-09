@@ -1,9 +1,20 @@
-import { IFieldOptions } from '../types';
+export type IFile = {
+  src: string;
+  path: string;
+  metadata: IFileMetadata;
+};
 
-export function Field(options?: IFieldOptions) {
+export type IFileMetadata = {
+  filename: string;
+  extension: string;
+};
+
+export type IFileFieldOptions = {};
+
+export function File(options?: IFileFieldOptions) {
   return function (target: any, key: string) {
     let val: any;
-    
+
     if (!target._fields) {
       target._fields = {};
     }

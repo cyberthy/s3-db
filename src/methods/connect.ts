@@ -8,8 +8,9 @@ export let client: S3Client;
 export let dbInstance: IDbClient;
 export let globalConfig: DbClientParams;
 
-export function connect({ s3Config }: IS3DbConnectParams) {
+export function connect(params?: IS3DbConnectParams) {
   try {
+    const { s3Config } = params as any;
     let config;
     if (!s3Config) {
       config = genEnvConfig();
