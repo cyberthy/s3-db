@@ -1,5 +1,5 @@
-import { S3ClientConfig } from '@aws-sdk/client-s3';
-import { IFile } from '../decorators';
+import { S3ClientConfig } from "@aws-sdk/client-s3";
+import { IFile } from "../decorators";
 
 export type DbClientParams = {
   awsAccessKey: string;
@@ -14,7 +14,7 @@ export type IDbClient = {
   find: (collectionPath: string, collectionId: string) => Promise<any>;
   list: (collectionPath: string) => Promise<any>;
   saveRaw: (collectionPath: string, file: IFile) => Promise<any>;
-  getRawFile: (filePath: string) => Promise<any>
+  getRawFile: (filePath: string) => Promise<any>;
 };
 
 export type IS3DbConnectParams = {

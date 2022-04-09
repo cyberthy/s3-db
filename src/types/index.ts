@@ -1,2 +1,2 @@
-export * from './DbClient';
-export * from './Collection';
+export * from "./DbClient";
+export * from "./Collection";
