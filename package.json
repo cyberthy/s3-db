@@ -1,6 +1,6 @@
 {
   "name": "@cyberthy/s3-db",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "An AWS S3 NoSQL database 'ORM'",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
