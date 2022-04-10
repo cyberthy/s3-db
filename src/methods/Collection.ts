@@ -1,6 +1,6 @@
-import { ICollection, IDbClient } from '../types';
-import { dbInstance } from './connect';
-import * as crypto from 'crypto';
+import { ICollection, IDbClient } from "../types";
+import { dbInstance } from "./connect";
+import * as crypto from "crypto";
 
 export class Collection<T> implements ICollection {
   private _fields: { id: string } & T;
@@ -21,7 +21,7 @@ export class Collection<T> implements ICollection {
 
   private setCollectionName() {
     let name = Object.getPrototypeOf(this).constructor.name;
-    name = name.replace(/[\W_]+/g, ' ').toLowerCase();
+    name = name.replace(/[\W_]+/g, " ").toLowerCase();
     this._collectionName = name;
   }
 
@@ -41,7 +41,7 @@ export class Collection<T> implements ICollection {
   public set(data: T) {
     if (data) {
       Object.keys(data).forEach((key: any) => {
-        if (key === 'id' || (this._fields as any).hasOwnProperty(key)) {
+        if (key === "id" || (this._fields as any).hasOwnProperty(key)) {
           (this as any)[key] = (data as any)[key];
           (this._fields as any)[key] = (data as any)[key];
         }
@@ -65,13 +65,13 @@ export class Collection<T> implements ICollection {
 
   async list() {
     return await this._client.list(
-      `${this.collectionPath || ''}${this._collectionName || ''}`
+      `${this.collectionPath || ""}${this._collectionName || ""}`
     );
   }
 
   async find() {
     const result = await this._client.find(
-      `${this.collectionPath || ''}${this._collectionName || ''}`,
+      `${this.collectionPath || ""}${this._collectionName || ""}`,
       this._fields.id
     );
 
@@ -89,11 +89,10 @@ export class Collection<T> implements ICollection {
       this.generateNewId();
     }
 
-
     if (this._files) {
       for (const key of Object.keys(this._files)) {
         const newPath = await this._client.saveRaw(
-          `${this.collectionPath || ''}${this._collectionName || ''}`,
+          `${this.collectionPath || ""}${this._collectionName || ""}`,
           (this._fields as any)[key]
         );
 
@@ -104,7 +103,7 @@ export class Collection<T> implements ICollection {
 
     if (!this.mockMode) {
       await this._client.save(
-        `${this.collectionPath || ''}${this._collectionName || ''}`,
+        `${this.collectionPath || ""}${this._collectionName || ""}`,
         this.toJSON()
       );
     }
@@ -113,7 +112,7 @@ export class Collection<T> implements ICollection {
   async delete() {
     if (!this.mockMode) {
       await this._client.delete(
-        `${this.collectionPath || ''}${this._collectionName || ''}`,
+        `${this.collectionPath || ""}${this._collectionName || ""}`,
         this._fields.id
       );
     }
