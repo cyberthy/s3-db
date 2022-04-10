@@ -1,3 +1,9 @@
+## 2.0.0 (2022-04-10)
+
+##### Breaking Changes
+
+* **decorators:**  removed decorators in favor of classes ([cc0f3e91](https://github.com/cyberthy/s3-db/commit/cc0f3e91c3550cbab7d653962d2a0f1a2d04bd54))
+
 #### 1.2.3 (2022-04-10)
 
 ##### Bug Fixes
