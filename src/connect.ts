@@ -1,11 +1,11 @@
 import { S3Client } from "@aws-sdk/client-s3";
-import { genEnvConfig, validateConfig } from "../lib/helpers";
-import s3Client from "../lib/s3Client";
-import { DbClientParams, IDbClient, IS3DbConnectParams } from "../types";
+import { genEnvConfig, validateConfig } from "./lib/helpers";
+import s3Client from "./lib/s3Client";
+import { DbClientParams, IDbClient, IS3DbConnectParams } from "./types";
 import { DbClient } from "./DbClient";
 
 export let client: S3Client;
-export let dbInstance: IDbClient;
+export let dbInstance: DbClient;
 export let globalConfig: DbClientParams;
 
 export function connect(params?: IS3DbConnectParams) {

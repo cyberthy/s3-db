@@ -1,5 +1,5 @@
 import { S3ClientConfig } from "@aws-sdk/client-s3";
-import { IFile } from "../decorators";
+import { IFile } from "../types";
 
 export type DbClientParams = {
   awsAccessKey: string;

@@ -1,4 +1,3 @@
-export * from "./methods/Collection";
-export * from "./methods/connect";
+export * from "./Collection";
+export * from "./connect";
 export * from "./types";
-export * from "./decorators";
