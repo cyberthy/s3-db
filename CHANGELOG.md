@@ -1,3 +1,9 @@
+#### 1.2.2 (2022-04-10)
+
+##### Bug Fixes
+
+* **collection:**  edited to use the set method when generating an id ([2fdf4720](https://github.com/cyberthy/s3-db/commit/2fdf4720ef72ed172739ad26e2f8cb5d0e8b01d2))
+
 #### 1.2.1 (2022-04-09)
 
 ##### Bug Fixes
