@@ -1,3 +1,9 @@
+#### 1.2.3 (2022-04-10)
+
+##### Bug Fixes
+
+* **dbclient:**  fixed some bugs where state would not update fields correctly ([25212a07](https://github.com/cyberthy/s3-db/commit/25212a077b816b82132ebb51e0d5687bcd4a66ad))
+
 #### 1.2.2 (2022-04-10)
 
 ##### Bug Fixes
