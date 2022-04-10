@@ -1,3 +1,9 @@
+#### 2.0.1 (2022-04-10)
+
+##### Bug Fixes
+
+* **tests:**  fixing test broken by moved file ([26114135](https://github.com/cyberthy/s3-db/commit/261141352afa5df40496edd29ba5b332193d5485))
+
 ## 2.0.0 (2022-04-10)
 
 ##### Breaking Changes
