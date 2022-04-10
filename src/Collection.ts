@@ -1,7 +1,7 @@
-import { v4 as generateUUIDv4 } from 'uuid';
-import { baseModel, FieldMap, FieldTypes, ICollection } from './types';
-import { dbInstance } from './connect';
-import { DbClient } from './DbClient';
+import { v4 as generateUUIDv4 } from "uuid";
+import { baseModel, FieldMap, FieldTypes, ICollection } from "./types";
+import { dbInstance } from "./connect";
+import { DbClient } from "./DbClient";
 
 export class Collection<T> implements ICollection {
   protected client: DbClient;
@@ -36,7 +36,7 @@ export class Collection<T> implements ICollection {
 
   private setCollectionName() {
     let name = Object.getPrototypeOf(this).constructor.name;
-    name = name.replace(/[\W_]+/g, ' ').toLowerCase();
+    name = name.replace(/[\W_]+/g, " ").toLowerCase();
     this.collectionName = name;
   }
 
@@ -65,7 +65,7 @@ export class Collection<T> implements ICollection {
 
   async list() {
     const items = await this.client.list(
-      `${this.collectionPath || ''}${this.collectionName || ''}`
+      `${this.collectionPath || ""}${this.collectionName || ""}`
     );
 
     if (!items) {
@@ -83,7 +83,7 @@ export class Collection<T> implements ICollection {
 
   async find(id?: string) {
     const result = await this.client.find(
-      `${this.collectionPath || ''}${this.collectionName || ''}`,
+      `${this.collectionPath || ""}${this.collectionName || ""}`,
       id || this.model.id
     );
 
@@ -109,7 +109,7 @@ export class Collection<T> implements ICollection {
 
     for (const key of this.hasFileFields()) {
       const newPath = await this.client.saveRaw(
-        `${this.collectionPath || ''}${this.collectionName || ''}`,
+        `${this.collectionPath || ""}${this.collectionName || ""}`,
         (this.model as any)[key]
       );
 
@@ -119,7 +119,7 @@ export class Collection<T> implements ICollection {
 
     if (!this.mockMode) {
       await this.client.save(
-        `${this.collectionPath || ''}${this.collectionName || ''}`,
+        `${this.collectionPath || ""}${this.collectionName || ""}`,
         this.toJSON()
       );
     }
@@ -132,7 +132,7 @@ export class Collection<T> implements ICollection {
       }
 
       await this.client.delete(
-        `${this.collectionPath || ''}${this.collectionName || ''}`,
+        `${this.collectionPath || ""}${this.collectionName || ""}`,
         this.model.id
       );
     }

@@ -6,11 +6,11 @@ export interface ICollection {
 
 export type baseModel = { id: string };
 export enum FieldTypes {
-  File = 'file',
-  String = 'string',
-  Number = 'number',
-  Boolean = 'boolean',
-  Object = 'object',
+  File = "file",
+  String = "string",
+  Number = "number",
+  Boolean = "boolean",
+  Object = "object",
 }
 
 export type FieldMap = { [name: string]: { type: FieldTypes } };
@@ -23,5 +23,5 @@ export type IFieldOptions = {};
 
 export interface IColumn {
   name: string;
-  type: 'number' | 'text';
+  type: "number" | "text";
 }
