@@ -20,7 +20,7 @@ export function File(options?: IFileFieldOptions) {
     if (!target._fields) {
       target._fields = [];
     }
-    if(!target._files) {
+    if (!target._files) {
       target._files = {};
     }
     target._fields.push(key);

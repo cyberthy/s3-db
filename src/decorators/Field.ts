@@ -1,10 +1,10 @@
-import { IFieldOptions } from '../types';
+import { IFieldOptions } from "../types";
 
 export function Field(options?: IFieldOptions) {
   return function (target: any, key: string) {
     let val: any;
 
-    if(!target._fields) {
+    if (!target._fields) {
       target._fields = [];
     }
     target._fields.push(key);
