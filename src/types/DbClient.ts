@@ -14,7 +14,8 @@ export type IDbClient = {
   find: (collectionPath: string, collectionId: string) => Promise<any>;
   list: (collectionPath: string) => Promise<any>;
   saveRaw: (collectionPath: string, file: IFile) => Promise<any>;
-  getRawFile: (filePath: string) => Promise<any>;
+  getRawFile: (file: IFile) => Promise<any>;
+  deleteRaw: (file: IFile) => Promise<any>;
 };
 
 export type IS3DbConnectParams = {

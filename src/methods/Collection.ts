@@ -1,9 +1,11 @@
-import { ICollection, IDbClient } from "../types";
-import { dbInstance } from "./connect";
-import * as crypto from "crypto";
+import { ICollection, IDbClient } from '../types';
+import { dbInstance } from './connect';
+import { v4 as generateUUIDv4 } from 'uuid';
 
+type fieldType = { id: string };
 export class Collection<T> implements ICollection {
-  private _fields: { id: string } & T;
+  private _fields: string[];
+  private _values: fieldType & T = {} as fieldType & T;
   private _files: any;
   private _client: IDbClient;
   protected _collectionName: string;
@@ -14,15 +16,22 @@ export class Collection<T> implements ICollection {
 
   constructor(initObj?: T, mockMode?: boolean) {
     this.getInstance();
-    this.set(initObj as any);
     this.setCollectionName();
     this.mockMode = mockMode;
+
+    if (initObj) {
+      this.set(initObj);
+    }
   }
 
   private setCollectionName() {
     let name = Object.getPrototypeOf(this).constructor.name;
-    name = name.replace(/[\W_]+/g, " ").toLowerCase();
+    name = name.replace(/[\W_]+/g, ' ').toLowerCase();
     this._collectionName = name;
+  }
+
+  get get() {
+    return this._values;
   }
 
   private getInstance() {
@@ -31,48 +40,45 @@ export class Collection<T> implements ICollection {
   }
 
   protected getFields() {
-    return this._fields;
+    return this._values;
   }
 
   public toJSON() {
-    return this._fields;
+    return this._values;
   }
 
   public set(data: T) {
     if (data) {
       Object.keys(data).forEach((key: any) => {
-        if (key === "id" || (this._fields as any).hasOwnProperty(key)) {
-          (this as any)[key] = (data as any)[key];
-          (this._fields as any)[key] = (data as any)[key];
+        if (key === 'id' || this._fields.includes(key)) {
+          (this._values as any)[key] = (data as any)[key];
         }
       });
     }
   }
 
   generateNewId() {
-    this.set({ id: crypto.randomUUID() } as any);
+    this.set({ id: generateUUIDv4() } as any);
   }
 
   async getFile(fileFieldName: string) {
-    if (!this._fields.hasOwnProperty(fileFieldName)) {
+    if (!this._fields.includes(fileFieldName)) {
       throw `this field doesn't exist`;
     }
-    console.log((this._fields as any)[fileFieldName]);
-    return await this._client.getRawFile(
-      (this._fields as any)[fileFieldName].path
-    );
+
+    return await this._client.getRawFile((this._values as any)[fileFieldName]);
   }
 
   async list() {
     return await this._client.list(
-      `${this.collectionPath || ""}${this._collectionName || ""}`
+      `${this.collectionPath || ''}${this._collectionName || ''}`
     );
   }
 
   async find() {
     const result = await this._client.find(
-      `${this.collectionPath || ""}${this._collectionName || ""}`,
-      this._fields.id
+      `${this.collectionPath || ''}${this._collectionName || ''}`,
+      this._values.id
     );
 
     if (!result) {
@@ -85,25 +91,25 @@ export class Collection<T> implements ICollection {
 
   // action methods
   async save() {
-    if (!this._fields.id) {
+    if (!this._values.id) {
       this.generateNewId();
     }
 
     if (this._files) {
       for (const key of Object.keys(this._files)) {
         const newPath = await this._client.saveRaw(
-          `${this.collectionPath || ""}${this._collectionName || ""}`,
-          (this._fields as any)[key]
+          `${this.collectionPath || ''}${this._collectionName || ''}`,
+          (this._values as any)[key]
         );
 
-        (this._fields as any)[key].path = newPath;
-        (this._fields as any)[key].metadata.data = {};
+        (this._values as any)[key].path = newPath;
+        (this._values as any)[key].metadata.data = {};
       }
     }
 
     if (!this.mockMode) {
       await this._client.save(
-        `${this.collectionPath || ""}${this._collectionName || ""}`,
+        `${this.collectionPath || ''}${this._collectionName || ''}`,
         this.toJSON()
       );
     }
@@ -111,9 +117,15 @@ export class Collection<T> implements ICollection {
 
   async delete() {
     if (!this.mockMode) {
+      if (this._files) {
+        for (const key of Object.keys(this._files)) {
+          await this._client.deleteRaw((this._values as any)[key]);
+        }
+      }
+
       await this._client.delete(
-        `${this.collectionPath || ""}${this._collectionName || ""}`,
-        this._fields.id
+        `${this.collectionPath || ''}${this._collectionName || ''}`,
+        this._values.id
       );
     }
   }

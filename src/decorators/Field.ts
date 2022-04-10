@@ -1,21 +1,20 @@
-import { IFieldOptions } from "../types";
+import { IFieldOptions } from '../types';
 
 export function Field(options?: IFieldOptions) {
   return function (target: any, key: string) {
     let val: any;
 
-    if (!target._fields) {
-      target._fields = {};
+    if(!target._fields) {
+      target._fields = [];
     }
-
-    target._fields[key] = null;
+    target._fields.push(key);
 
     const getter = () => {
       return val;
     };
 
     const setter = (value: any) => {
-      target._fields[key] = value;
+      target._values[key] = value;
       val = value;
     };
 
