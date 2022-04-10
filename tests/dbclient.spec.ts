@@ -1,5 +1,5 @@
 import { S3Client } from '@aws-sdk/client-s3';
-import { DbClient } from '../src/methods/DbClient';
+import { DbClient } from '../src/DbClient';
 describe('DbClient', () => {
   it('should fail with a no access key message', () => {
     try {
