@@ -1,24 +1,31 @@
-import { v4 as generateUUIDv4 } from "uuid";
-import { baseModel, FieldMap, FieldTypes, ICollection } from "./types";
-import { dbInstance } from "./connect";
-import { DbClient } from "./DbClient";
+import { v4 as generateUUIDv4 } from 'uuid';
+import {
+  FieldMap,
+  FieldTypeRelationship,
+  FieldTypes,
+  ICollection,
+} from './types';
+import { dbInstance } from './connect';
+import { DbClient } from './DbClient';
+import { Field } from './decorators';
 
-export class Collection<T> implements ICollection {
+export class Collection implements ICollection {
   protected client: DbClient;
-  protected model: baseModel & T;
   protected collectionPath: string;
   protected fieldMap: FieldMap;
   protected collectionName: string;
 
   private mockMode: boolean | undefined;
+  private _loadRelationships: boolean;
 
-  constructor(initObj?: T, mockMode?: boolean) {
+  @Field({ type: FieldTypes.ID })
+  id: string;
+
+  constructor(initObj?: any, mockMode?: boolean) {
     this.setCollectionName();
     this.getInstance();
 
-    if (initObj) {
-      this.model = initObj as baseModel & T;
-    }
+    this.set(initObj as any);
 
     this.mockMode = mockMode;
   }
@@ -27,16 +34,9 @@ export class Collection<T> implements ICollection {
     // should implement joi validation that is dynamic
   }
 
-  /**
-   * get a snapshot of the instance model at a specific time.
-   */
-  get _snapshot() {
-    return this.model;
-  }
-
   private setCollectionName() {
     let name = Object.getPrototypeOf(this).constructor.name;
-    name = name.replace(/[\W_]+/g, " ").toLowerCase();
+    name = name.replace(/[\W_]+/g, ' ').toLowerCase();
     this.collectionName = name;
   }
 
@@ -45,46 +45,51 @@ export class Collection<T> implements ICollection {
   }
 
   toJSON() {
-    return this.model;
+    const jsonObj = {};
+    for (const key of Object.keys(this.fieldMap)) {
+      (jsonObj as any)[key] = (this as any)[key];
+    }
+    return jsonObj;
   }
 
-  set(data: T) {
-    console.log(this.fieldMap);
-    // validation here?
+  set(data: any) {
     if (data) {
-      this.model = {
-        ...this.model,
-        ...data,
-      };
+      // validation here?
+      for (const key of Object.keys(data)) {
+        (this as any)[key] = (data as any)[key];
+      }
     }
+    return this;
+  }
+
+  get(key: string) {
+    return (this as any)[key];
   }
 
   generateNewId() {
-    this.set({ id: generateUUIDv4() } as any);
+    this.set({ id: generateUUIDv4() });
   }
 
   async list() {
     const items = await this.client.list(
-      `${this.collectionPath || ""}${this.collectionName || ""}`
+      `${this.collectionPath || ''}${this.collectionName || ''}`
     );
 
     if (!items) {
       return [];
     }
 
-    let collections = [];
+    const collectionPromises = [];
     for (const item of items) {
-      const fetched = await this.find(item.id);
-      collections.push(fetched);
+      collectionPromises.push(this.find(item.id));
     }
-
-    return collections;
+    return await Promise.all(collectionPromises);
   }
 
   async find(id?: string) {
     const result = await this.client.find(
-      `${this.collectionPath || ""}${this.collectionName || ""}`,
-      id || this.model.id
+      `${this.collectionPath || ''}${this.collectionName || ''}`,
+      id || (this as any)['id']
     );
 
     if (!result) {
@@ -92,49 +97,117 @@ export class Collection<T> implements ICollection {
     }
 
     this.set(result);
+    if (this._loadRelationships) {
+      await this._eagerLoadRelationships();
+    }
+
     return result;
   }
 
-  hasFileFields(): string[] {
+  hasTypeOfFields(type: FieldTypes): string[] {
     return Object.keys(this.fieldMap).filter(
-      (item) => this.fieldMap[item].type === FieldTypes.File
+      (item) => this.fieldMap[item].type === type
     );
   }
 
   // action methods
   async save() {
-    if (!this.model.id) {
-      this.generateNewId();
+    try {
+      if (!this.id) {
+        this.generateNewId();
+      }
+
+      for (const key of this.hasTypeOfFields(FieldTypes.Relationship)) {
+        const newRelationshipIds = await this._saveRelationship(
+          this.get(key),
+          this.fieldMap[key].relationshipType
+        );
+        this.set({ [key]: newRelationshipIds });
+      }
+
+      if (!this.mockMode) {
+        for (const key of this.hasTypeOfFields(FieldTypes.File)) {
+          const newPath = await this.client.saveRaw(
+            `${this.collectionPath || ''}${this.collectionName || ''}`,
+            this.get(key)
+          );
+
+          this.get(key).path = newPath;
+          this.get(key).metadata.data = {};
+        }
+
+        await this.client.save(
+          `${this.collectionPath || ''}${this.collectionName || ''}`,
+          this.toJSON()
+        );
+      }
+    } catch (error) {
+      console.trace(error);
     }
+  }
 
-    for (const key of this.hasFileFields()) {
-      const newPath = await this.client.saveRaw(
-        `${this.collectionPath || ""}${this.collectionName || ""}`,
-        (this.model as any)[key]
-      );
+  private async _saveRelationship(
+    rel: Collection | Collection[],
+    relationshipType?: FieldTypeRelationship
+  ) {
+    switch (relationshipType) {
+      case FieldTypeRelationship.OneToMany:
+        const newIds = [];
+        if ((rel as any)?.length) {
+          for (const relationship of rel as any) {
+            await relationship.save();
+            newIds.push(relationship.get('id'));
+          }
+        }
+        return newIds;
 
-      (this.model as any)[key].path = newPath;
-      (this.model as any)[key].metadata.data = {};
-    }
-
-    if (!this.mockMode) {
-      await this.client.save(
-        `${this.collectionPath || ""}${this.collectionName || ""}`,
-        this.toJSON()
-      );
+      default:
+        return [];
     }
   }
 
   async delete() {
     if (!this.mockMode) {
-      for (const key of this.hasFileFields()) {
-        await this.client.deleteRaw((this.model as any)[key]);
+      for (const key of this.hasTypeOfFields(FieldTypes.File)) {
+        await this.client.deleteRaw((this as any)[key]);
       }
 
       await this.client.delete(
-        `${this.collectionPath || ""}${this.collectionName || ""}`,
-        this.model.id
+        `${this.collectionPath || ''}${this.collectionName || ''}`,
+        (this as any).id
       );
+    }
+  }
+
+  /**
+   * A chain function to set the with relationships option
+   * @returns Collection<T>
+   */
+  withRelationships(): Collection {
+    this._loadRelationships = true;
+    return this;
+  }
+
+  // private _addRelationship() {}
+
+  private async _eagerLoadRelationships() {
+    for (const key of this.hasTypeOfFields(FieldTypes.Relationship)) {
+      switch (this.fieldMap[key].relationshipType) {
+        case FieldTypeRelationship.OneToMany:
+          const fetchedRelationshipArr = [];
+          for (const id of this.get(key)) {
+            const relationshipClass = new this.fieldMap[key].relationshipClass({
+              id,
+            });
+            await relationshipClass.find();
+            fetchedRelationshipArr.push(relationshipClass);
+          }
+
+          this.set({ [key]: fetchedRelationshipArr });
+          break;
+        default:
+          return [];
+      }
     }
   }
 }
