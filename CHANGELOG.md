@@ -1,3 +1,9 @@
+#### 2.2.1 (2022-04-11)
+
+##### Continuous Integration
+
+* **fixing actions:**  fixing the actions ([1e5f14e2](https://github.com/cyberthy/s3-db/commit/1e5f14e28cedb6832ee5386662d1da7d508a78c3))
+
 ### 2.2.0 (2022-04-11)
 
 ##### Bug Fixes
