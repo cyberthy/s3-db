@@ -1,3 +1,9 @@
+### 2.1.0 (2022-04-11)
+
+##### Breaking Changes
+
+* **decorators:**  adding decorators back as a required feature ([699085ba](https://github.com/cyberthy/s3-db/commit/699085baa515482ffd0c12878f155cef3ec8ca41))
+
 #### 2.0.1 (2022-04-10)
 
 ##### Bug Fixes
