@@ -19,16 +19,9 @@
     "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor && git push origin && git push origin --tags",
     "release:patch": "changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version patch && git push origin && git push origin --tags"
   },
-  "publishConfig": {
-    "@cyberthy:registry": "https://npm.pkg.github.com"
-  },
   "files": [
     "dist/**/*"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/cyberthy/s3-db.git"
-  },
   "author": "cyberthy",
   "license": "ISC",
   "bugs": {
