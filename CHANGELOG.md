@@ -1,3 +1,9 @@
+### 2.2.0 (2022-04-11)
+
+##### Bug Fixes
+
+* **package:**  fixing (53a37c55)
+
 ### 2.1.0 (2022-04-11)
 
 ##### Breaking Changes
