@@ -1,4 +1,4 @@
-import { FieldMap, FieldMapType, FieldTypes } from '../types';
+import { FieldMap, FieldMapType, FieldTypes } from "../types";
 
 export function Field(options?: FieldMapType) {
   return function (target: any, name: string) {
@@ -11,8 +11,8 @@ export function Field(options?: FieldMapType) {
     target.fieldMap[name] = {
       name,
       type: options?.type || FieldTypes.String,
-      relationshipType: options?.relationshipType || '',
-      relationshipClass: options?.relationshipClass || undefined
+      relationshipType: options?.relationshipType || "",
+      relationshipClass: options?.relationshipClass || undefined,
     };
 
     const get = () => {

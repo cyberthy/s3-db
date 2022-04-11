@@ -1,13 +1,13 @@
-import { v4 as generateUUIDv4 } from 'uuid';
+import { v4 as generateUUIDv4 } from "uuid";
 import {
   FieldMap,
   FieldTypeRelationship,
   FieldTypes,
   ICollection,
-} from './types';
-import { dbInstance } from './connect';
-import { DbClient } from './DbClient';
-import { Field } from './decorators';
+} from "./types";
+import { dbInstance } from "./connect";
+import { DbClient } from "./DbClient";
+import { Field } from "./decorators";
 
 export class Collection implements ICollection {
   protected client: DbClient;
@@ -36,7 +36,7 @@ export class Collection implements ICollection {
 
   private setCollectionName() {
     let name = Object.getPrototypeOf(this).constructor.name;
-    name = name.replace(/[\W_]+/g, ' ').toLowerCase();
+    name = name.replace(/[\W_]+/g, " ").toLowerCase();
     this.collectionName = name;
   }
 
@@ -72,7 +72,7 @@ export class Collection implements ICollection {
 
   async list() {
     const items = await this.client.list(
-      `${this.collectionPath || ''}${this.collectionName || ''}`
+      `${this.collectionPath || ""}${this.collectionName || ""}`
     );
 
     if (!items) {
@@ -88,8 +88,8 @@ export class Collection implements ICollection {
 
   async find(id?: string) {
     const result = await this.client.find(
-      `${this.collectionPath || ''}${this.collectionName || ''}`,
-      id || (this as any)['id']
+      `${this.collectionPath || ""}${this.collectionName || ""}`,
+      id || (this as any)["id"]
     );
 
     if (!result) {
@@ -128,7 +128,7 @@ export class Collection implements ICollection {
       if (!this.mockMode) {
         for (const key of this.hasTypeOfFields(FieldTypes.File)) {
           const newPath = await this.client.saveRaw(
-            `${this.collectionPath || ''}${this.collectionName || ''}`,
+            `${this.collectionPath || ""}${this.collectionName || ""}`,
             this.get(key)
           );
 
@@ -137,7 +137,7 @@ export class Collection implements ICollection {
         }
 
         await this.client.save(
-          `${this.collectionPath || ''}${this.collectionName || ''}`,
+          `${this.collectionPath || ""}${this.collectionName || ""}`,
           this.toJSON()
         );
       }
@@ -156,7 +156,7 @@ export class Collection implements ICollection {
         if ((rel as any)?.length) {
           for (const relationship of rel as any) {
             await relationship.save();
-            newIds.push(relationship.get('id'));
+            newIds.push(relationship.get("id"));
           }
         }
         return newIds;
@@ -173,7 +173,7 @@ export class Collection implements ICollection {
       }
 
       await this.client.delete(
-        `${this.collectionPath || ''}${this.collectionName || ''}`,
+        `${this.collectionPath || ""}${this.collectionName || ""}`,
         (this as any).id
       );
     }

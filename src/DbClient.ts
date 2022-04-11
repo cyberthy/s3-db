@@ -4,11 +4,11 @@ import {
   ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
-} from '@aws-sdk/client-s3';
-import { IDbClient } from './types';
-import { globalConfig } from './connect';
-import * as crypto from 'crypto';
-import { IFile } from './types/File';
+} from "@aws-sdk/client-s3";
+import { IDbClient } from "./types";
+import { globalConfig } from "./connect";
+import * as crypto from "crypto";
+import { IFile } from "./types/File";
 
 /**
  * Not going to be exported for now.
@@ -42,7 +42,7 @@ export class DbClient implements IDbClient {
     const objects = await this.client.send(
       new ListObjectsV2Command({
         Bucket: globalConfig.dbBucket,
-        Delimiter: '/',
+        Delimiter: "/",
         Prefix,
       })
     );
@@ -52,7 +52,7 @@ export class DbClient implements IDbClient {
     );
 
     return objectsNotFolders?.map((object) => ({
-      id: { ...object }.Key?.split('/').pop(),
+      id: { ...object }.Key?.split("/").pop(),
       ...object,
     }));
   }
@@ -66,10 +66,10 @@ export class DbClient implements IDbClient {
   private streamToString(stream: any, encoding?: any) {
     return new Promise((resolve, reject) => {
       const chunks: any = [];
-      stream.on('data', (chunk: any) => chunks.push(chunk));
-      stream.on('error', reject);
-      stream.on('end', () =>
-        resolve(Buffer.concat(chunks).toString(encoding || 'utf8'))
+      stream.on("data", (chunk: any) => chunks.push(chunk));
+      stream.on("error", reject);
+      stream.on("end", () =>
+        resolve(Buffer.concat(chunks).toString(encoding || "utf8"))
       );
     });
   }
@@ -87,14 +87,14 @@ export class DbClient implements IDbClient {
         new GetObjectCommand({
           Bucket: globalConfig.dbBucket,
           Key: path,
-          ResponseContentType: 'Buffer',
+          ResponseContentType: "Buffer",
         })
       );
 
       const value: string = (await this.streamToString(Body)) as string;
       return JSON.parse(value);
     } catch (error) {
-      throw 'Item not found';
+      throw "Item not found";
     }
   }
 
@@ -109,17 +109,17 @@ export class DbClient implements IDbClient {
         new GetObjectCommand({
           Bucket: globalConfig.dbBucket,
           Key: file.path,
-          ResponseContentType: 'Buffer',
+          ResponseContentType: "Buffer",
         })
       );
 
       const value: string = (await this.streamToString(
         Body,
-        'base64'
+        "base64"
       )) as string;
       return value;
     } catch (error) {
-      throw 'Item not found';
+      throw "Item not found";
     }
   }
 
