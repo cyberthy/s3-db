@@ -24,6 +24,10 @@
   ],
   "author": "cyberthy",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cyberthy/s3-db"
+  },
   "bugs": {
     "url": "https://github.com/cyberthy/s3-db/issues"
   },
