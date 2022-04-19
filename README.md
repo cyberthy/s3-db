@@ -3,5 +3,5 @@
 At the moment we are treating the client as a collection mapper that saves documents in s3 based off the properties of the Collection class.
 
 Please find all your documentation in the github wiki for this project!
-https://github.com/cyberthy/s3-db/wiki
+https://www.cyberthy.com/docs
 
