@@ -3,7 +3,7 @@ import { DbClient } from '../src/DbClient';
 describe('DbClient', () => {
   it('should fail with a no access key message', () => {
     try {
-      const client = new DbClient({} as S3Client);
+      const client = new DbClient({} as S3Client, 'test-bucket');
     } catch (error) {
       expect((error as any).message).toBe('No Access Key!');
     }
@@ -11,7 +11,7 @@ describe('DbClient', () => {
 
   it('should fail with a no secret key message', () => {
     try {
-      const client = new DbClient({} as S3Client);
+      const client = new DbClient({} as S3Client, 'test-bucket');
     } catch (error) {
       expect((error as any).message).toBe('No Secret Key!');
     }
