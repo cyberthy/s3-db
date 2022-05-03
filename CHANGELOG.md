@@ -1,3 +1,13 @@
+### 2.3.0 (2022-05-03)
+
+##### Bug Fixes
+
+* **state:**  for whatever reason client state wasn't working, now fixed ([45d90c68](https://github.com/cyberthy/s3-db/commit/45d90c68c9d91324daf766e7abd973406e1dcfde))
+
+##### Other Changes
+
+* //github.com/cyberthy/s3-db ([e30fcfa4](https://github.com/cyberthy/s3-db/commit/e30fcfa4a0f92559f22f97aba54ca1306d9c91a3))
+
 #### 2.2.2 (2022-04-11)
 
 #### 2.2.1 (2022-04-11)
