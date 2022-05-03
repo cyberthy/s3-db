@@ -5,9 +5,10 @@ import {
   FieldTypes,
   ICollection,
 } from "./types";
-import { dbInstance } from "./connect";
 import { DbClient } from "./DbClient";
 import { Field } from "./decorators";
+import s3Client from "./lib/s3Client";
+import { genEnvConfig } from "./lib/helpers";
 
 export class Collection implements ICollection {
   protected client: DbClient;
@@ -19,15 +20,20 @@ export class Collection implements ICollection {
   private _loadRelationships: boolean;
 
   @Field({ type: FieldTypes.ID })
-  id: string;
+  id: string | undefined;
 
   constructor(initObj?: any, mockMode?: boolean) {
     this.setCollectionName();
-    this.getInstance();
+    this.client = this.setConnection();
 
     this.set(initObj as any);
 
     this.mockMode = mockMode;
+  }
+
+  private setConnection() {
+    const config = genEnvConfig();
+    return new DbClient(s3Client(config), config.dbBucket);
   }
 
   private validateModel() {
@@ -38,10 +44,6 @@ export class Collection implements ICollection {
     let name = Object.getPrototypeOf(this).constructor.name;
     name = name.replace(/[\W_]+/g, " ").toLowerCase();
     this.collectionName = name;
-  }
-
-  private getInstance() {
-    this.client = dbInstance;
   }
 
   toJSON() {
@@ -110,13 +112,18 @@ export class Collection implements ICollection {
     );
   }
 
-  // action methods
-  async save() {
-    try {
-      if (!this.id) {
-        this.generateNewId();
-      }
+  async update() {
+    this.commit();
+  }
 
+  async save() {
+    this.generateNewId();
+    this.commit();
+  }
+
+  // action methods
+  async commit() {
+    try {
       for (const key of this.hasTypeOfFields(FieldTypes.Relationship)) {
         const newRelationshipIds = await this._saveRelationship(
           this.get(key),
@@ -187,8 +194,6 @@ export class Collection implements ICollection {
     this._loadRelationships = true;
     return this;
   }
-
-  // private _addRelationship() {}
 
   private async _eagerLoadRelationships() {
     for (const key of this.hasTypeOfFields(FieldTypes.Relationship)) {

@@ -6,7 +6,6 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { IDbClient } from "./types";
-import { globalConfig } from "./connect";
 import * as crypto from "crypto";
 import { IFile } from "./types/File";
 
@@ -15,9 +14,11 @@ import { IFile } from "./types/File";
  */
 export class DbClient implements IDbClient {
   client: S3Client;
+  bucket: string;
 
-  constructor(client: S3Client) {
+  constructor(client: S3Client, bucket: string) {
     this.client = client;
+    this.bucket = bucket;
   }
 
   /**
@@ -41,7 +42,7 @@ export class DbClient implements IDbClient {
 
     const objects = await this.client.send(
       new ListObjectsV2Command({
-        Bucket: globalConfig.dbBucket,
+        Bucket: this.bucket,
         Delimiter: "/",
         Prefix,
       })
@@ -85,7 +86,7 @@ export class DbClient implements IDbClient {
       const path = this.validatePath(collectionPath, collectionId);
       const { Body } = await this.client.send(
         new GetObjectCommand({
-          Bucket: globalConfig.dbBucket,
+          Bucket: this.bucket,
           Key: path,
           ResponseContentType: "Buffer",
         })
@@ -107,7 +108,7 @@ export class DbClient implements IDbClient {
     try {
       const { Body } = await this.client.send(
         new GetObjectCommand({
-          Bucket: globalConfig.dbBucket,
+          Bucket: this.bucket,
           Key: file.path,
           ResponseContentType: "Buffer",
         })
@@ -133,7 +134,7 @@ export class DbClient implements IDbClient {
     const path = this.validatePath(collectionPath, data.id);
     return await this.client.send(
       new PutObjectCommand({
-        Bucket: globalConfig.dbBucket,
+        Bucket: this.bucket,
         Key: path,
         Body: JSON.stringify(data) as unknown as string,
       })
@@ -151,7 +152,7 @@ export class DbClient implements IDbClient {
     const path = `${collectionPath}/_files/${newName}`;
     await this.client.send(
       new PutObjectCommand({
-        Bucket: globalConfig.dbBucket,
+        Bucket: this.bucket,
         Key: path,
         Body: file.metadata.data,
       })
@@ -173,7 +174,7 @@ export class DbClient implements IDbClient {
     const path = file.path;
     await this.client.send(
       new DeleteObjectCommand({
-        Bucket: globalConfig.dbBucket,
+        Bucket: this.bucket,
         Key: path,
       })
     );
@@ -191,7 +192,7 @@ export class DbClient implements IDbClient {
     const path = this.validatePath(collectionPath, collectionId);
     await this.client.send(
       new DeleteObjectCommand({
-        Bucket: globalConfig.dbBucket,
+        Bucket: this.bucket,
         Key: path,
       })
     );

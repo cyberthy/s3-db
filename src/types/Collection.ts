@@ -1,5 +1,5 @@
 export interface ICollection {
-  id: string;
+  id: string | undefined;
   save: () => void;
   delete: () => void;
   list: () => void;
