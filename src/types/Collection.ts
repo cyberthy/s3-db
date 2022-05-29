@@ -1,8 +1,11 @@
+import { Collection } from "../Collection";
+
 export interface ICollection {
   id: string | undefined;
   save: () => void;
-  delete: () => void;
-  list: () => void;
+  delete: () => Promise<void>;
+  list: () => Promise<Collection[]>;
+  bulkDelete: (items: Collection[]) => Promise<boolean>;
 }
 
 export type baseModel = { id: string };

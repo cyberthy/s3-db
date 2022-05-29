@@ -22,12 +22,9 @@ export class Collection implements ICollection {
   @Field({ type: FieldTypes.ID })
   id: string | undefined;
 
-  constructor(initObj?: any, mockMode?: boolean) {
+  constructor(mockMode?: boolean) {
     this.setCollectionName();
     this.client = this.setConnection();
-
-    this.set(initObj as any);
-
     this.mockMode = mockMode;
   }
 
@@ -46,7 +43,7 @@ export class Collection implements ICollection {
     this.collectionName = name;
   }
 
-  toJSON() {
+  toJSON(): Object {
     const jsonObj = {};
     for (const key of Object.keys(this.fieldMap)) {
       (jsonObj as any)[key] = (this as any)[key];
@@ -54,25 +51,27 @@ export class Collection implements ICollection {
     return jsonObj;
   }
 
-  set(data: any) {
+  set(data: any): Collection {
     if (data) {
       // validation here?
       for (const key of Object.keys(data)) {
         (this as any)[key] = (data as any)[key];
       }
     }
+
     return this;
   }
 
-  get(key: string) {
+  get(key: string): any {
     return (this as any)[key];
   }
 
-  generateNewId() {
+  generateNewId(): Collection {
     this.set({ id: generateUUIDv4() });
+    return this;
   }
 
-  async list() {
+  async list(): Promise<Collection[]> {
     const items = await this.client.list(
       `${this.collectionPath || ""}${this.collectionName || ""}`
     );
@@ -83,19 +82,23 @@ export class Collection implements ICollection {
 
     const collectionPromises = [];
     for (const item of items) {
-      collectionPromises.push(this.find(item.id));
+      const col = { ...this.find(item.id) };
+      collectionPromises.push(col);
     }
-    return await Promise.all(collectionPromises);
+    const result = await Promise.all(collectionPromises);
+    return result;
   }
 
-  async find(id?: string) {
+  async find(id?: string): Promise<Collection> {
+    console.log(`${this.collectionPath || ""}${this.collectionName || ""}`);
+
     const result = await this.client.find(
       `${this.collectionPath || ""}${this.collectionName || ""}`,
       id || (this as any)["id"]
     );
 
     if (!result) {
-      return {};
+      return this;
     }
 
     this.set(result);
@@ -103,7 +106,7 @@ export class Collection implements ICollection {
       await this._eagerLoadRelationships();
     }
 
-    return result;
+    return this;
   }
 
   hasTypeOfFields(type: FieldTypes): string[] {
@@ -122,7 +125,7 @@ export class Collection implements ICollection {
   }
 
   // action methods
-  async commit() {
+  async commit(): Promise<Collection> {
     try {
       for (const key of this.hasTypeOfFields(FieldTypes.Relationship)) {
         const newRelationshipIds = await this._saveRelationship(
@@ -147,9 +150,12 @@ export class Collection implements ICollection {
           `${this.collectionPath || ""}${this.collectionName || ""}`,
           this.toJSON()
         );
+
       }
     } catch (error) {
       console.trace(error);
+    } finally {
+      return this;
     }
   }
 
@@ -173,7 +179,18 @@ export class Collection implements ICollection {
     }
   }
 
-  async delete() {
+  async bulkDelete(items: Collection[]) {
+    if (!this.mockMode) {
+      const promises = [];
+      for (const item of items) {
+        promises.push(item.delete());
+      }
+      await Promise.all(promises);
+    }
+    return true;
+  }
+
+  async delete(id?: string) {
     if (!this.mockMode) {
       for (const key of this.hasTypeOfFields(FieldTypes.File)) {
         await this.client.deleteRaw((this as any)[key]);
@@ -181,7 +198,7 @@ export class Collection implements ICollection {
 
       await this.client.delete(
         `${this.collectionPath || ""}${this.collectionName || ""}`,
-        (this as any).id
+        id || (this as any).id
       );
     }
   }
